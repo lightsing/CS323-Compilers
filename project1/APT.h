@@ -25,4 +25,6 @@ AnnotatedParseTreeNode* newAnnotatedParseNode(char* name, int cnt, ...);
 
 AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno);
 
+void printAnnotatedParseTree(AnnotatedParseTreeNode* apt, int indent);
+
 #endif

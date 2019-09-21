@@ -35,8 +35,25 @@ AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno) {
     node->name = name;
     node->left = NULL;
     node->right = NULL;
-
+    printf("<%s>:%d\n", name, lineno);
     // TODO: parse value from yytext
     
     return node;
+}
+
+void printAnnotatedParseTree(AnnotatedParseTreeNode* apt, int indent) {
+    if (apt == NULL) return;
+    if (indent > 0) printf("%*c", indent * 2, ' '); // print indent using 2 spaces
+
+    printf("%s", apt->name);
+
+    if (apt->lineno == -1) {
+        printf("\n");
+        return;
+    }
+    
+    printf(" (%d)\n", apt->lineno); // TODO: print parse value
+
+    printAnnotatedParseTree(apt->left, indent + 1);
+    printAnnotatedParseTree(apt->right, indent);
 }
