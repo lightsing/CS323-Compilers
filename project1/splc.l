@@ -1,4 +1,5 @@
 %{
+    #include "APT.h"
     #include "splc.tab.h"
 %}
 %option yylineno
@@ -24,7 +25,7 @@ PLUS    "+"
 MINUS   "-"
 MUL     "*"
 DIV     "/"
-ADD     "&&"
+AND     "&&"
 OR      "||"
 NOT     "!"
 LP      "("
