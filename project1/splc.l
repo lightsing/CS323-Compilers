@@ -1,6 +1,11 @@
 %{
     #include "APT.h"
     #include "splc.tab.h"
+
+    #define __ASSIGN_LEAF_NODE(NAME)    { \
+        yylval.AptNode = newAnnotatedParseLeafNode(#NAME, yylineno); \
+        return NAME; \
+    }
 %}
 %option yylineno
 
@@ -49,42 +54,43 @@ ID                  [_a-zA-Z][_a-zA-Zs0-9]*
 
 %%
     /* keywords */
-{TYPE}  return TYPE;
-{STRUCT}  return STRUCT;
-{IF}      return IF;
-{ELSE}    return ELSE;
-{WHILE}   return WHILE;
-{RETURN}  return RETURN;
-{INT} { return INT; }
+{TYPE}    __ASSIGN_LEAF_NODE(TYPE);
+{STRUCT}  __ASSIGN_LEAF_NODE(STRUCT);
+{IF}      __ASSIGN_LEAF_NODE(IF);
+{ELSE}    __ASSIGN_LEAF_NODE(ELSE);
+{WHILE}   __ASSIGN_LEAF_NODE(WHILE);
+{RETURN}  __ASSIGN_LEAF_NODE(RETURN);
+    /* INT */
+{INT}    __ASSIGN_LEAF_NODE(INT);
+{FLOAT}  __ASSIGN_LEAF_NODE(FLOAT);
 {WRONG_HEX_INT} { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
-{FLOAT}  { return FLOAT; }
     /* single character (printable or hex-form) */
-{CHAR} { return CHAR; }
+{CHAR}  __ASSIGN_LEAF_NODE(CHAR);
 {WRONG_HEX_CHAR} { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
-{ID} { return ID; }
-{DOT} return DOT;
-{SEMI} return SEMI;
-{COMMA} return COMMA;
-{ASSIGN} return ASSIGN;
-{LT} return LT;
-{LE} return LE;
-{GT} return GT;
-{GE} return GE;
-{NE} return NE;
-{EQ} return EQ;
-{PLUS}  return PLUS;
-{MINUS}     return MINUS;
-{MUL}     return MUL;
-{DIV}     return DIV;
-{AND}    return AND;
-{OR}    return OR;
-{NOT}     return NOT;
-{LP}     return LP;
-{RP}     return RP;
-{LB}     return LB;
-{RB}     return RB;
-{LC}     return LC;
-{RC}     return RC;
+{ID}  __ASSIGN_LEAF_NODE(ID);
+{DOT}  __ASSIGN_LEAF_NODE(DOT);
+{SEMI}  __ASSIGN_LEAF_NODE(SEMI);
+{COMMA}  __ASSIGN_LEAF_NODE(COMMA);
+{ASSIGN}  __ASSIGN_LEAF_NODE(ASSIGN);
+{LT}  __ASSIGN_LEAF_NODE(LT);
+{LE}  __ASSIGN_LEAF_NODE(LE);
+{GT}  __ASSIGN_LEAF_NODE(GT);
+{GE}  __ASSIGN_LEAF_NODE(GE);
+{NE}  __ASSIGN_LEAF_NODE(NE);
+{EQ}  __ASSIGN_LEAF_NODE(EQ);
+{PLUS}   __ASSIGN_LEAF_NODE(PLUS);
+{MINUS}  __ASSIGN_LEAF_NODE(MINUS);
+{MUL}  __ASSIGN_LEAF_NODE(MUL);
+{DIV}  __ASSIGN_LEAF_NODE(DIV);
+{AND}  __ASSIGN_LEAF_NODE(AND);
+{OR}   __ASSIGN_LEAF_NODE(OR);
+{NOT}  __ASSIGN_LEAF_NODE(NOT);
+{LP}  __ASSIGN_LEAF_NODE(LP);
+{RP}  __ASSIGN_LEAF_NODE(RP);
+{LB}  __ASSIGN_LEAF_NODE(LB);
+{RB}  __ASSIGN_LEAF_NODE(RB);
+{LC}  __ASSIGN_LEAF_NODE(LC);
+{RC}  __ASSIGN_LEAF_NODE(RC);
     /* whitespace */
 \n      ;
 [\t ]+ ;
