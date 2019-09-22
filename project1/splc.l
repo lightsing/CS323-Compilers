@@ -41,8 +41,9 @@ LC      "{"
 RC      "}"
 
     /* integer in 32-bits (decimal or hexadecimal) */
-INT                 [+-]?((0x[0-9a-fA-F]+)|([0-9]+))
-WRONG_HEX_INT       [+-]?(0x[0-9a-zA-Z]+)
+INT                 [+-]?[0-9]+
+HEX_INT             [+-]?0x[0-9a-fA-F]+
+WRONG_HEX_INT       [+-]?0x[0-9a-zA-Z]+
 
     /* floating point number (only dot-form) */
 FLOAT               [-+]?(([0-9]+\.?[0-9]*)|([0-9]*\.?[0-9]+))
@@ -61,8 +62,9 @@ ID                  [_a-zA-Z][_a-zA-Zs0-9]*
 {WHILE}   __ASSIGN_LEAF_NODE(WHILE);
 {RETURN}  __ASSIGN_LEAF_NODE(RETURN);
     /* INT */
-{INT}    __ASSIGN_LEAF_NODE(INT);
-{FLOAT}  __ASSIGN_LEAF_NODE(FLOAT);
+{INT}       __ASSIGN_LEAF_NODE(INT);
+{HEX_INT}   __ASSIGN_LEAF_NODE(HEX_INT);
+{FLOAT}     __ASSIGN_LEAF_NODE(FLOAT);
 {WRONG_HEX_INT} { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
     /* single character (printable or hex-form) */
 {CHAR}  __ASSIGN_LEAF_NODE(CHAR);

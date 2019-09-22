@@ -9,6 +9,7 @@
 }
 
 %token <AptNode> INT     // /* integer in 32-bits (decimal or hexadecimal) */
+%token <AptNode> HEX_INT
 %token <AptNode> FLOAT   // /* floating point number (only dot-form) */
 %token <AptNode> CHAR    // /* single character (printable or hex-form) */
 %token <AptNode> ID      // /* identifier */
@@ -99,6 +100,7 @@ StructSpecifier:
 VarDec: 
         ID    { $$ = newAnnotatedParseNode("VarDec", 1, $1); }
     |   VarDec LB INT RB    { $$ = newAnnotatedParseNode("VarDec", 3, $1, $2, $3, $4); }
+    |   VarDec LB HEX_INT RB    { $$ = newAnnotatedParseNode("VarDec", 3, $1, $2, $3, $4); }
     ;
 FunDec:
         ID LP VarList RP    { $$ = newAnnotatedParseNode("FunDec", 3, $1, $2, $3, $4); }
@@ -171,6 +173,7 @@ Exp:
     |   Exp DOT ID    { $$ = newAnnotatedParseNode("Exp", 3, $1, $2, $3); }
     |   ID    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   INT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
+    |   HEX_INT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   FLOAT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   CHAR    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   error RP
