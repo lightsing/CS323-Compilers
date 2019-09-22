@@ -4,6 +4,8 @@
 #ifndef _LT_APT_H
 #define _LT_APT_H
 
+extern char* yytext;
+
 typedef struct AnnotatedParseTreeNode {
     int lineno;
     char* name;

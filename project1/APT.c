@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "APT.h"
 
@@ -35,25 +36,49 @@ AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno) {
     node->name = name;
     node->left = NULL;
     node->right = NULL;
-    printf("<%s>:%d\n", name, lineno);
-    // TODO: parse value from yytext
-    
+    node->is_token = 1;
+    // printf("<%s>:%d\n", name, lineno);
+
+    if (!strcmp(node->name, "ID") || !strcmp(node->name, "TYPE")) {
+        char* tmp = (char *)malloc(sizeof(char) * strlen(yytext));
+        strcpy(tmp, yytext);
+        node->string_value = tmp;
+    } else if (!strcmp(node->name, "INT")) {
+        node->int_value = atoi(yytext);
+    } else if (!strcmp(node->name, "HEXINT")) {
+        node->int_value = strtol(yytext, NULL, 16);
+    } else if (!strcmp(node->name, "FLOAT")) {
+        node->float_value = atof(yytext);
+    }
     return node;
 }
 
 void printAnnotatedParseTree(AnnotatedParseTreeNode* apt, int indent) {
     if (apt == NULL) return;
-    if (indent > 0) printf("%*c", indent * 2, ' '); // print indent using 2 spaces
+    if (strcmp(apt->name, "Epsilon") != 0) {
+        if (indent > 0) printf("%*c", indent * 2, ' '); // print indent using 2 spaces
 
-    printf("%s", apt->name);
+        printf("%s", apt->name);
 
-    if (apt->lineno == -1) {
-        printf("\n");
-        return;
+        if (apt->lineno == -1) {
+            printf("\n");
+            return;
+        }
+
+        if (!strcmp(apt->name, "ID") || !strcmp(apt->name, "TYPE"))
+            printf(": %s\n", apt->string_value);
+        else if (!strcmp(apt->name, "INT"))
+            printf(": %d\n", apt->int_value);
+        else if (!strcmp(apt->name, "HEX_INT"))
+            printf(": %d\n", apt->int_value);
+        else if (!strcmp(apt->name, "FLOAT"))
+            printf(": %f\n", apt->float_value);
+        else if (apt->is_token == 0)
+            printf(" (%d)\n", apt->lineno);
+        else
+            printf("\n");
     }
     
-    printf(" (%d)\n", apt->lineno); // TODO: print parse value
-
     printAnnotatedParseTree(apt->left, indent + 1);
     printAnnotatedParseTree(apt->right, indent);
 }
