@@ -13,11 +13,12 @@ AnnotatedParseTreeNode* newAnnotatedParseNode(char* name, int cnt, ...) {
     node->name = name;
     node->left = NULL;
     node->right = NULL;
+    node->is_token = 0;
 
     va_list childs;
-    if (cnt < 0) return NULL; // fault
+    if (cnt < 0) return node; // fault
     va_start(childs, cnt);
-    
+
     AnnotatedParseTreeNode* child = va_arg(childs, AnnotatedParseTreeNode*);
     node->left = child;
     node->lineno = child->lineno;

@@ -20,6 +20,8 @@ typedef struct AnnotatedParseTreeNode {
         float float_value;
         char* string_value;
     };
+
+    short is_token;
     
 } AnnotatedParseTreeNode;
 
