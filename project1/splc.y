@@ -7,6 +7,11 @@
         fprintf(stderr, "Error type B at Line %d: Missing semicolon ';'\n", e->lineno); \
     }
 
+    #define MISSING_RP_ERROR(e) { \
+        ++errors; \
+        fprintf(stderr, "Error type B at Line %d: Missing closing parenthesis ')'\n", e->lineno); \
+    }
+
     uint32_t errors = 0;
 
     void yyerror (const char*);
@@ -125,6 +130,14 @@ VarDec:
 FunDec:
         ID LP VarList RP    { $$ = newAnnotatedParseNode("FunDec", 4, $1, $2, $3, $4); }
     |   ID LP RP    { $$ = newAnnotatedParseNode("FunDec", 3, $1, $2, $3); }
+    |   ID LP VarList error    {
+        $$ = newAnnotatedParseNode("FunDec", 3, $1, $2, $3);
+        MISSING_RP_ERROR($3);
+    }
+    |   ID LP error    {
+        $$ = newAnnotatedParseNode("FunDec", 2, $1, $2);
+        MISSING_RP_ERROR($2);
+    }
     ;
 VarList:
         ParamDec COMMA VarList    { $$ = newAnnotatedParseNode("VarList", 3, $1, $2, $3); }
@@ -155,7 +168,19 @@ Stmt:
     }
     |   RETURN Exp error    {
         $$ = newAnnotatedParseNode("Stmt", 2, $1, $2);
-        MISSING_SEMI_ERROR($1);
+        MISSING_SEMI_ERROR($2);
+    }
+    |   IF LP Exp error Stmt    { 
+        $$ = newAnnotatedParseNode("Stmt", 4, $1, $2, $3, $5);
+        MISSING_RP_ERROR($3);
+    }
+    |   IF LP Exp error Stmt ELSE Stmt    {
+        $$ = newAnnotatedParseNode("Stmt", 6, $1, $2, $3, $5, $6, $7);
+        MISSING_RP_ERROR($3);
+    }
+    |   WHILE LP Exp error Stmt    {
+        $$ = newAnnotatedParseNode("Stmt", 3, $1, $2, $3, $5);
+        MISSING_RP_ERROR($3);
     }
     ;
 
@@ -208,6 +233,18 @@ Exp:
     |   CHAR    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   ERROR   {
         ++errors;
+    }
+    |   LP Exp error    {
+        $$ = newAnnotatedParseNode("Exp", 2, $1, $2);
+        MISSING_RP_ERROR($2);
+    }
+    |   ID LP Args error    {
+        $$ = newAnnotatedParseNode("Exp", 3, $1, $2, $3); 
+        MISSING_RP_ERROR($3);
+    }
+    |   ID LP error    {
+        $$ = newAnnotatedParseNode("Exp", 3, $1, $2);
+        MISSING_RP_ERROR($2);
     }
     ;
 Args: Exp COMMA Args    { $$ = newAnnotatedParseNode("Args", 3, $1, $2, $3); }
