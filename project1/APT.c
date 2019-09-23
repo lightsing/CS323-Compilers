@@ -38,7 +38,10 @@ AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno) {
     node->left = NULL;
     node->right = NULL;
     node->is_token = 1;
-    // printf("<%s>:%d\n", name, lineno);
+    
+    #ifdef DEBUG
+    printf("<%s, L%d>: %s\n", name, lineno, yytext);
+    #endif
 
     if (!strcmp(node->name, "ID") || !strcmp(node->name, "TYPE")) {
         char* tmp = (char *)malloc(sizeof(char) * strlen(yytext));
