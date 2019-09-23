@@ -9,6 +9,7 @@
 %}
 %option yylineno
 
+%x IN_COMMENT
     /* keywords */
 TYPE    "int"|"float"|"char"
 STRUCT  "struct"
@@ -53,6 +54,9 @@ CHAR                '(([ -~])|(\\x[0-9a-fA-F]{2}))'
 WRONG_HEX_CHAR      '\\x[0-9a-zA-Z]*'
 ID                  [_a-zA-Z][_a-zA-Zs0-9]*
 
+    /* comments */
+SINGLE_LINE_COMMENT \/\/[^\n]*
+MULTI_LINE_COMMENT  \/\*.*\*\/
 %%
     /* keywords */
 {TYPE}    __ASSIGN_LEAF_NODE(TYPE);
@@ -93,8 +97,21 @@ ID                  [_a-zA-Z][_a-zA-Zs0-9]*
 {RB}  __ASSIGN_LEAF_NODE(RB);
 {LC}  __ASSIGN_LEAF_NODE(LC);
 {RC}  __ASSIGN_LEAF_NODE(RC);
+    /* comments */
+{SINGLE_LINE_COMMENT}   ;
+    /* multi-line comments */
+"/*"  BEGIN(IN_COMMENT);
     /* whitespace */
 \n      ;
 [\t ]+ ;
-.       { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); return ERROR;}
+.       {
+    printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext);
+    __ASSIGN_LEAF_NODE(ERROR);
+}
+<IN_COMMENT>{
+"*/"      BEGIN(INITIAL);
+[^*\n]+   // eat comment in chunks
+"*"       // eat the lone star
+\n        ;
+}
 %%
