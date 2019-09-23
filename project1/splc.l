@@ -96,5 +96,5 @@ ID                  [_a-zA-Z][_a-zA-Zs0-9]*
     /* whitespace */
 \n      ;
 [\t ]+ ;
-.       { printf("Error type A at Line %d: Unknown characters '%s'\n", yylineno, yytext); }
+.       { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
 %%
