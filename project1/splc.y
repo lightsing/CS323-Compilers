@@ -148,7 +148,7 @@ Stmt:
     |   RETURN Exp SEMI    { $$ = newAnnotatedParseNode("Stmt", 3, $1, $2, $3); }
     |   IF LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 5, $1, $2, $3, $4, $5); }
     |   IF LP Exp RP Stmt ELSE Stmt    { $$ = newAnnotatedParseNode("Stmt", 7, $1, $2, $3, $4, $5, $6, $7); }
-    |   WHILE LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 4, $1, $2, $3, $4); }
+    |   WHILE LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 5, $1, $2, $3, $4, $5); }
     |   Exp error   {
         $$ = newAnnotatedParseNode("Stmt", 1, $1);
         MISSING_SEMI_ERROR($1);
