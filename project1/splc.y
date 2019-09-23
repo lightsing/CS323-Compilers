@@ -103,7 +103,7 @@ VarDec:
     |   VarDec LB HEX_INT RB    { $$ = newAnnotatedParseNode("VarDec", 3, $1, $2, $3, $4); }
     ;
 FunDec:
-        ID LP VarList RP    { $$ = newAnnotatedParseNode("FunDec", 3, $1, $2, $3, $4); }
+        ID LP VarList RP    { $$ = newAnnotatedParseNode("FunDec", 4, $1, $2, $3, $4); }
     |   ID LP RP    { $$ = newAnnotatedParseNode("FunDec", 3, $1, $2, $3); }
     ;
 VarList:
@@ -128,7 +128,7 @@ Stmt:
     |   CompSt    { $$ = newAnnotatedParseNode("Stmt", 1, $1); }
     |   RETURN Exp SEMI    { $$ = newAnnotatedParseNode("Stmt", 3, $1, $2, $3); }
     |   IF LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 5, $1, $2, $3, $4, $5); }
-    |   IF LP Exp RP Stmt ELSE Stmt    { $$ = newAnnotatedParseNode("Stmt", 7, $1, $2, $3, $4, $6, $7); }
+    |   IF LP Exp RP Stmt ELSE Stmt    { $$ = newAnnotatedParseNode("Stmt", 7, $1, $2, $3, $4, $5, $6, $7); }
     |   WHILE LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 4, $1, $2, $3, $4); }
     |   error SEMI
     ;
