@@ -1,6 +1,14 @@
 %{
     #include "APT.h"
     #include "lex.yy.c"
+
+    #define MISSING_SEMI_ERROR(e) { \
+        ++errors; \
+        fprintf(stderr, "Error type B at Line %d: Missing semicolon ';'\n", e->lineno); \
+    }
+
+    uint32_t errors = 0;
+
     void yyerror (const char*);
 %}
 
@@ -42,6 +50,7 @@
 %token <AptNode> RB      // ]
 %token <AptNode> LC      // {
 %token <AptNode> RC      // }
+%token <AptNode> ERROR   // Lexical error
 //%token <AptNode> NEWLINE
 
 %type <AptNode> Program ExtDefList ExtDef ExtDecList;
@@ -69,7 +78,7 @@
 Program: 
         ExtDefList    { 
                 $$ = newAnnotatedParseNode("Program", 1, $1);
-                printAnnotatedParseTree($$, 0);
+                if (errors == 0)    printAnnotatedParseTree($$, 0);
             }
     ;
 ExtDefList: 
@@ -80,6 +89,17 @@ ExtDef:
         Specifier ExtDecList SEMI    { $$ = newAnnotatedParseNode("ExtDef", 3, $1, $2, $3); }
     |   Specifier SEMI    { $$ = newAnnotatedParseNode("ExtDef", 2, $1, $2); }
     |   Specifier FunDec CompSt    { $$ = newAnnotatedParseNode("ExtDef", 3, $1, $2, $3); }
+    |   Specifier error {
+        $$ = newAnnotatedParseNode("ExtDef", 1, $1);
+        MISSING_SEMI_ERROR($1);
+    }
+    |   Specifier ExtDecList error {
+        $$ = newAnnotatedParseNode("ExtDef", 2, $1, $2);
+        MISSING_SEMI_ERROR($1);
+    }
+    |   error SEMI {
+        ++errors;
+    }
     ;
 ExtDecList:
         VarDec    { $$ = newAnnotatedParseNode("ExtDecList", 1, $1); }
@@ -117,7 +137,6 @@ ParamDec:
     /* statement */
 CompSt: 
         LC DefList StmtList RC    { $$ = newAnnotatedParseNode("CompSt", 4, $1, $2, $3, $4); }
-    |   error RC
     ;
 StmtList: 
         Stmt StmtList    { $$ = newAnnotatedParseNode("StmtList", 2, $1, $2); }
@@ -130,7 +149,14 @@ Stmt:
     |   IF LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 5, $1, $2, $3, $4, $5); }
     |   IF LP Exp RP Stmt ELSE Stmt    { $$ = newAnnotatedParseNode("Stmt", 7, $1, $2, $3, $4, $5, $6, $7); }
     |   WHILE LP Exp RP Stmt    { $$ = newAnnotatedParseNode("Stmt", 4, $1, $2, $3, $4); }
-    |   error SEMI
+    |   Exp error   {
+        $$ = newAnnotatedParseNode("Stmt", 1, $1);
+        MISSING_SEMI_ERROR($1);
+    }
+    |   RETURN Exp error    {
+        $$ = newAnnotatedParseNode("Stmt", 2, $1, $2);
+        MISSING_SEMI_ERROR($1);
+    }
     ;
 
     /* local definition */
@@ -140,6 +166,10 @@ DefList:
     ;
 Def:
         Specifier DecList SEMI    { $$ = newAnnotatedParseNode("Def", 3, $1, $2, $3); }
+    |   Specifier DecList error    {
+        $$ = newAnnotatedParseNode("Def", 2, $1, $2);
+        MISSING_SEMI_ERROR($1);
+    }
     ;
 DecList: 
         Dec    { $$ = newAnnotatedParseNode("DecList", 1, $1); }
@@ -176,7 +206,9 @@ Exp:
     |   HEX_INT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   FLOAT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   CHAR    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
-    |   error RP
+    |   ERROR   {
+        ++errors;
+    }
     ;
 Args: Exp COMMA Args    { $$ = newAnnotatedParseNode("Args", 3, $1, $2, $3); }
     |   Exp    { $$ = newAnnotatedParseNode("Args", 1, $1); }
@@ -185,16 +217,18 @@ Args: Exp COMMA Args    { $$ = newAnnotatedParseNode("Args", 3, $1, $2, $3); }
 void
 yyerror (char const *s)
 {
-  //fprintf (stderr, "ERROR:%s\n", s);
+  #ifdef DEBUG
   fprintf (stderr, "ERROR: Line %d, %s \"%s\"\n", yylineno, s, yytext);
-  
+  #endif
 }
 
 int
 main (int argc, char **argv)
 {
     yyin = fopen(argv[1], "r");
-    //yydebug = 1;
+    #ifdef DEBUG
+    yydebug = 1;
+    #endif
     yyparse();
     /*while(1) {
         int token = yylex();
