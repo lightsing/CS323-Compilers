@@ -174,10 +174,6 @@ Stmt:
         $$ = newAnnotatedParseNode("Stmt", 4, $1, $2, $3, $5);
         MISSING_RP_ERROR($3);
     }
-    |   IF LP Exp error Stmt ELSE Stmt    {
-        $$ = newAnnotatedParseNode("Stmt", 6, $1, $2, $3, $5, $6, $7);
-        MISSING_RP_ERROR($3);
-    }
     |   WHILE LP Exp error Stmt    {
         $$ = newAnnotatedParseNode("Stmt", 3, $1, $2, $3, $5);
         MISSING_RP_ERROR($3);
