@@ -43,16 +43,16 @@ AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno) {
     printf("<%s, L%d>: %s\n", name, lineno, yytext);
     #endif
 
-    if (!strcmp(node->name, "ID") || !strcmp(node->name, "TYPE")) {
-        char* tmp = (char *)malloc(sizeof(char) * strlen(yytext));
-        strcpy(tmp, yytext);
-        node->string_value = tmp;
-    } else if (!strcmp(node->name, "INT")) {
+    if (!strcmp(node->name, "INT")) {
         node->int_value = atoi(yytext);
     } else if (!strcmp(node->name, "HEXINT")) {
         node->int_value = strtol(yytext, NULL, 16);
     } else if (!strcmp(node->name, "FLOAT")) {
         node->float_value = atof(yytext);
+    } else {
+        char* tmp = (char *)malloc(sizeof(char) * strlen(yytext));
+        strcpy(tmp, yytext);
+        node->string_value = tmp;
     }
     return node;
 }
@@ -69,7 +69,11 @@ void printAnnotatedParseTree(AnnotatedParseTreeNode* apt, int indent) {
             return;
         }
 
-        if (!strcmp(apt->name, "ID") || !strcmp(apt->name, "TYPE"))
+        if (!strcmp(apt->name, "ID") || !strcmp(apt->name, "TYPE") ||
+            !strcmp(apt->name, "CHAR") || 
+            !strcmp(apt->name, "LT") || !strcmp(apt->name, "GT") ||
+            !strcmp(apt->name, "LE") || !strcmp(apt->name, "GE") ||
+            !strcmp(apt->name, "EQ"))
             printf(": %s\n", apt->string_value);
         else if (!strcmp(apt->name, "INT"))
             printf(": %d\n", apt->int_value);
