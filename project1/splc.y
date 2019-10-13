@@ -124,6 +124,10 @@ StructSpecifier:
     /* declarator */
 VarDec: 
         ID    { $$ = newAnnotatedParseNode("VarDec", 1, $1); }
+    |   ERROR {
+        ++errors;
+        $$ = newAnnotatedParseNode("VarDec", 1, $1);
+    }
     |   VarDec LB INT RB    { $$ = newAnnotatedParseNode("VarDec", 3, $1, $2, $3, $4); }
     |   VarDec LB HEX_INT RB    { $$ = newAnnotatedParseNode("VarDec", 3, $1, $2, $3, $4); }
     ;
@@ -220,15 +224,20 @@ Exp:
     |   NOT Exp    { $$ = newAnnotatedParseNode("Exp", 2, $1, $2); }
     |   ID LP Args RP    { $$ = newAnnotatedParseNode("Exp", 4, $1, $2, $3, $4); }
     |   ID LP RP    { $$ = newAnnotatedParseNode("Exp", 3, $1, $2, $3); }
-    |   Exp LB Exp LB    { $$ = newAnnotatedParseNode("Exp", 4, $1, $2, $3, $4); }
+    |   Exp LB Exp RB    { $$ = newAnnotatedParseNode("Exp", 4, $1, $2, $3, $4); }
     |   Exp DOT ID    { $$ = newAnnotatedParseNode("Exp", 3, $1, $2, $3); }
     |   ID    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   INT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   HEX_INT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   FLOAT    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
     |   CHAR    { $$ = newAnnotatedParseNode("Exp", 1, $1); }
+    |   Exp ERROR Exp   {
+        ++errors;
+        $$ = newAnnotatedParseNode("Exp", 3, $1, $2, $3);
+    }
     |   ERROR   {
         ++errors;
+        $$ = newAnnotatedParseNode("Exp", 1, $1);
     }
     |   LP Exp error    {
         $$ = newAnnotatedParseNode("Exp", 2, $1, $2);

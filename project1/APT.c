@@ -70,10 +70,7 @@ void printAnnotatedParseTree(AnnotatedParseTreeNode* apt, int indent) {
         }
 
         if (!strcmp(apt->name, "ID") || !strcmp(apt->name, "TYPE") ||
-            !strcmp(apt->name, "CHAR") || 
-            !strcmp(apt->name, "LT") || !strcmp(apt->name, "GT") ||
-            !strcmp(apt->name, "LE") || !strcmp(apt->name, "GE") ||
-            !strcmp(apt->name, "EQ"))
+            !strcmp(apt->name, "CHAR"))
             printf(": %s\n", apt->string_value);
         else if (!strcmp(apt->name, "INT"))
             printf(": %d\n", apt->int_value);
