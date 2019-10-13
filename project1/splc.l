@@ -6,6 +6,8 @@
         yylval.AptNode = newAnnotatedParseLeafNode(#NAME, yylineno); \
         return NAME; \
     }
+    
+    extern FILE* fout;
 %}
 %option yylineno
 
@@ -53,6 +55,7 @@ FLOAT               [-+]?(([0-9]+\.?[0-9]*)|([0-9]*\.?[0-9]+))
 CHAR                '(([ -~])|(\\x[0-9a-fA-F]{2}))'
 WRONG_HEX_CHAR      '\\x[0-9a-zA-Z]*'
 ID                  [_a-zA-Z][_a-zA-Zs0-9]*
+WRONG_ID            [_a-zA-Zs0-9]*
 
     /* comments */
 SINGLE_LINE_COMMENT \/\/[^\n]*
@@ -69,11 +72,21 @@ MULTI_LINE_COMMENT  \/\*.*\*\/
 {INT}       __ASSIGN_LEAF_NODE(INT);
 {HEX_INT}   __ASSIGN_LEAF_NODE(HEX_INT);
 {FLOAT}     __ASSIGN_LEAF_NODE(FLOAT);
-{WRONG_HEX_INT} { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
+{WRONG_HEX_INT} { 
+    fprintf(fout, "Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+    __ASSIGN_LEAF_NODE(ERROR);
+}
     /* single character (printable or hex-form) */
 {CHAR}  __ASSIGN_LEAF_NODE(CHAR);
-{WRONG_HEX_CHAR} { printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext); }
+{WRONG_HEX_CHAR} {
+    fprintf(fout, "Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+    __ASSIGN_LEAF_NODE(ERROR);
+}
 {ID}  __ASSIGN_LEAF_NODE(ID);
+{WRONG_ID} {
+    fprintf(fout, "Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
+    __ASSIGN_LEAF_NODE(ERROR);
+}
 {DOT}  __ASSIGN_LEAF_NODE(DOT);
 {SEMI}  __ASSIGN_LEAF_NODE(SEMI);
 {COMMA}  __ASSIGN_LEAF_NODE(COMMA);
@@ -105,7 +118,7 @@ MULTI_LINE_COMMENT  \/\*.*\*\/
 \n      ;
 [\t ]+ ;
 .       {
-    printf("Error type A at Line %d: Mysterious lexeme %s\n", yylineno, yytext);
+    fprintf(fout, "Error type A at Line %d: unknown lexeme %s\n", yylineno, yytext);
     __ASSIGN_LEAF_NODE(ERROR);
 }
 <IN_COMMENT>{

@@ -3,8 +3,13 @@ FLEX=flex
 YACC=bison
 
 DEBUG ?= 0
+VERBOSE ?= 0
 ifeq ($(DEBUG), 1)
-    CFLAGS=-DDEBUG -g
+    CFLAGS:=-DDEBUG -g $(CFLAGS)
+endif
+
+ifeq ($(VERBOSE), 1)
+    CFLAGS:=-DVERBOSE $(CFLAGS)
 endif
 
 splc: splc.y splc.l APT.c APT.h

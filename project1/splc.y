@@ -2,14 +2,16 @@
     #include "APT.h"
     #include "lex.yy.c"
 
+    FILE* fout = NULL;
+
     #define MISSING_SEMI_ERROR(e) { \
         ++errors; \
-        fprintf(stderr, "Error type B at Line %d: Missing semicolon ';'\n", e->lineno); \
+        fprintf(fout, "Error type B at Line %d: Missing semicolon ';'\n", e->lineno); \
     }
 
     #define MISSING_RP_ERROR(e) { \
         ++errors; \
-        fprintf(stderr, "Error type B at Line %d: Missing closing parenthesis ')'\n", e->lineno); \
+        fprintf(fout, "Error type B at Line %d: Missing closing parenthesis ')'\n", e->lineno); \
     }
 
     uint32_t errors = 0;
@@ -259,7 +261,7 @@ Args: Exp COMMA Args    { $$ = newAnnotatedParseNode("Args", 3, $1, $2, $3); }
 void
 yyerror (char const *s)
 {
-  #ifdef DEBUG
+  #ifdef VERBOSE
   fprintf (stderr, "ERROR: Line %d, %s \"%s\"\n", yylineno, s, yytext);
   #endif
 }
@@ -267,8 +269,27 @@ yyerror (char const *s)
 int
 main (int argc, char **argv)
 {
-    yyin = fopen(argv[1], "r");
     #ifdef DEBUG
+    fout = stdout;
+    #else
+    char* tmp = (char *)malloc(sizeof(char) * (strlen(argv[1]) + 3));
+    strcpy(tmp, argv[1]);
+    char *end = tmp + strlen(tmp);
+
+    while (end > tmp && *end != '.') {
+        --end;
+    }
+    if (end > tmp) {
+        *(end + 1)= 'o';
+        *(end + 2)= 'u';
+        *(end + 3)= 't';
+    }
+    fout = fopen(tmp, "w");
+    printf("%s\n", tmp);
+    #endif
+
+    yyin = fopen(argv[1], "r");
+    #ifdef VERBOSE
     yydebug = 1;
     #endif
     yyparse();
@@ -277,4 +298,7 @@ main (int argc, char **argv)
         if (token == 0) break;
         printf("Token: %d, value: '%s'\n", token, yytext);
     }*/
+    #ifndef DEBUG
+    fclose(fout);
+    #endif
 }

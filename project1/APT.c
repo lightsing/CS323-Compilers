@@ -39,7 +39,7 @@ AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno) {
     node->right = NULL;
     node->is_token = 1;
     
-    #ifdef DEBUG
+    #ifdef VERBOSE
     printf("<%s, L%d>: %s\n", name, lineno, yytext);
     #endif
 
