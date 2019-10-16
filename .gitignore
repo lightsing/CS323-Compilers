@@ -9,3 +9,4 @@ splc.tab.[hc]
 bin
 !*/test/*.out
 .vscode/
+*.DS_Store
