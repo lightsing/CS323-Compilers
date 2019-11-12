@@ -25,6 +25,8 @@ typedef struct AnnotatedParseTreeNode {
     
 } AnnotatedParseTreeNode;
 
+typedef AnnotatedParseTreeNode* Node;
+
 AnnotatedParseTreeNode* newAnnotatedParseNode(char* name, int cnt, ...);
 
 AnnotatedParseTreeNode* newAnnotatedParseLeafNode(char* name, int lineno);
