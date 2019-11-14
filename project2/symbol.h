@@ -9,6 +9,7 @@
 
 typedef struct Symbol {
     char* name;
+    Type* type;
     UT_hash_handle hh; /* makes this structure hashable */
 } Symbol;
 
