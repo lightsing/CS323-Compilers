@@ -44,12 +44,12 @@ LC      "{"
 RC      "}"
 
     /* integer in 32-bits (decimal or hexadecimal) */
-INT                 [+-]?[0-9]+
-HEX_INT             [+-]?0x[0-9a-fA-F]+
-WRONG_HEX_INT       [+-]?0x[0-9a-zA-Z]+
+INT                 [0-9]+
+HEX_INT             0x[0-9a-fA-F]+
+WRONG_HEX_INT       0x[0-9a-zA-Z]+
 
     /* floating point number (only dot-form) */
-FLOAT               [-+]?(([0-9]+\.?[0-9]*)|([0-9]*\.?[0-9]+))
+FLOAT               (([0-9]+\.?[0-9]*)|([0-9]*\.?[0-9]+))
 
     /* single character (printable or hex-form) */
 CHAR                '(([ -~])|(\\x[0-9a-fA-F]{2}))'
