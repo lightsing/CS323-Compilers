@@ -1,0 +1,2 @@
+Error type 1 at Line 8: function is invoked without definition "add"
+Error type 5 at Line 8: unmatching types on both sides of assignment operator

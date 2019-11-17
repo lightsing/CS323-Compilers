@@ -1,0 +1,2 @@
+Error type 3 at Line 6: variable is redefined in the same scope "a"
+Error type 3 at Line 12: variable is redefined in the same scope "a"
